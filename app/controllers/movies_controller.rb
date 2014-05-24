@@ -16,7 +16,8 @@ class MoviesController < ApplicationController
       end
 
       session[:ratings] ||= @all_ratings
-      @movies = Movie.find(:all, order: ["? ASC", session[:sort]],
+      session[:sort] ||= 'created_at'
+      @movies = Movie.find(:all, order: session[:sort],
                                  conditions: ["rating IN (?)", session[:ratings]])
     else
       @movies = Movie.all
