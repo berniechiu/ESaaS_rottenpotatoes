@@ -2,6 +2,11 @@
 class MoviesController < ApplicationController
 
   def index
+    @all_ratings = ['G', 'PG', 'PG-13', 'R']
+
+    if params[:ratings]
+      @movies = Movie.where(rating: params[:ratings].keys)
+    end
 
     case params[:sort]
     when 'title'
@@ -11,7 +16,8 @@ class MoviesController < ApplicationController
       @movies = Movie.order('release_date ASC')
       @release_hilite = 'hilite'
     else
-      @movies = Movie.all
+      params[:ratings] ? @movies = Movie.where(rating: params[:ratings].keys) :
+                         @movies = Movie.all
     end
   end
 
@@ -26,7 +32,6 @@ class MoviesController < ApplicationController
   end
 
   def create
-    debugger
     @movie = Movie.create!(params[:movie])
     flash[:notice] = "#{@movie.title} was successfully created."
     redirect_to movies_path
