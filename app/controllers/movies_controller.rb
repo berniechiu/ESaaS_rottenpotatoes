@@ -4,20 +4,21 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = ['G', 'PG', 'PG-13', 'R']
 
-    if params[:ratings]
-      @movies = Movie.where(rating: params[:ratings].keys)
-    end
+    session[:ratings] = params[:ratings].keys if params[:ratings]
+    session[:sort] = params[:sort] if params[:sort]
 
-    case params[:sort]
-    when 'title'
-      @movies = Movie.order('title ASC')
-      @title_hilite = 'hilite'
-    when 'release'
-      @movies = Movie.order('release_date ASC')
-      @release_hilite = 'hilite'
+    if session[:ratings] || session[:sort]
+      case session[:sort]
+      when 'title'
+        @title_hilite = 'hilite'
+      when 'release_date'
+        @release_hilite = 'hilite'
+      end
+
+      @movies = Movie.find(:all, order: ["? ASC", session[:sort]],
+                                 conditions: ["rating IN (?)", session[:ratings]])
     else
-      params[:ratings] ? @movies = Movie.where(rating: params[:ratings].keys) :
-                         @movies = Movie.all
+      @movies = Movie.all
     end
   end
 
