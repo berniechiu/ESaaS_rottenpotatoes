@@ -15,7 +15,7 @@ class MoviesController < ApplicationController
         @release_hilite = 'hilite'
       end
 
-      @session[:ratings] ||= @all_ratings
+      session[:ratings] ||= @all_ratings
       @movies = Movie.find(:all, order: ["? ASC", session[:sort]],
                                  conditions: ["rating IN (?)", session[:ratings]])
     else
