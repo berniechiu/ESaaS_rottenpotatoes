@@ -4,8 +4,8 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = ['G', 'PG', 'PG-13', 'R']
 
-    session[:ratings] = params[:ratings].keys if params[:ratings]
-    session[:sort] = params[:sort] if params[:sort]
+    session[:ratings] = params[:ratings] if params[:ratings]
+    session[:sort]    = params[:sort]    if params[:sort]
 
     if session[:ratings] || session[:sort]
       case session[:sort]
@@ -16,11 +16,17 @@ class MoviesController < ApplicationController
       end
 
       session[:ratings] ||= @all_ratings
-      session[:sort] ||= 'created_at'
-      @movies = Movie.find(:all, order: session[:sort],
-                                 conditions: ["rating IN (?)", session[:ratings]])
+      ratings = session[:ratings]
+      ratings = ratings.keys if ratings.respond_to?(:keys)
+      @movies = Movie.find(:all,
+                           order: session[:sort],
+                           conditions: ["rating IN (?)", ratings])
     else
       @movies = Movie.all
+    end
+
+    if session[:ratings] != params[:ratings] || session[:sort] != params[:sort]
+      redirect_to movies_path(ratings: session[:ratings], sort: session[:sort])
     end
   end
 
