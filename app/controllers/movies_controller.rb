@@ -16,11 +16,11 @@ class MoviesController < ApplicationController
       end
 
       session[:ratings] ||= @all_ratings
-      ratings = session[:ratings]
-      ratings = ratings.keys if ratings.respond_to?(:keys)
+      @ratings = session[:ratings]
+      @ratings = @ratings.keys if @ratings.respond_to?(:keys)
       @movies = Movie.find(:all,
                            order: session[:sort],
-                           conditions: ["rating IN (?)", ratings])
+                           conditions: ["rating IN (?)", @ratings])
     else
       @movies = Movie.all
     end
